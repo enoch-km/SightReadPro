@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SightReadPro - Real Piano Sounds</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            overflow-y: auto;
+        }
+        
+        #app {
+            width: 100vw;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .screen {
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+            width: 100%;
+            max-width: 1000px;
+        }
+        
+        .hidden { display: none; }
+        
+        .logo-container {
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .logo-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            font-size: 60px;
+            margin: 0 auto;
+        }
+        
+        .title-container {
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+        
+        .app-name {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 18px;
+            opacity: 0.9;
+            line-height: 24px;
+        }
+        
+        .button-container {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 40px;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+        
+        .start-button, .practice-button, .nav-button {
+            width: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 18px 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+            margin-bottom: 15px;
+        }
+        
+        .start-button:hover, .practice-button:hover, .nav-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .features-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease-out 0.9s both;
+        }
+        
+        .feature {
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .feature-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .screen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+        
+        .back-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        
+        .exercise-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .music-staff {
+            background: white;
+            height: 200px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-size: 24px;
+            position: relative;
+        }
+        
+        .staff-line {
+            position: absolute;
+            width: 80%;
+            height: 2px;
+            background: #333;
+        }
+        
+        .staff-line:nth-child(1) { top: 20%; }
+        .staff-line:nth-child(2) { top: 30%; }
+        .staff-line:nth-child(3) { top: 40%; }
+        .staff-line:nth-child(4) { top: 50%; }
+        .staff-line:nth-child(5) { top: 60%; }
+        
+        .note {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #333;
+            border-radius: 50%;
+            top: 45%;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .control-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .control-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .note-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .note-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .note-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .note-button.selected {
+            background: #4CAF50;
+            border-color: #45a049;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            min-height: 30px;
+        }
+        
+        .piano-keyboard {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 2px;
+        }
+        
+        .piano-key {
+            width: 40px;
+            height: 120px;
+            border: 1px solid #333;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 10px;
+            font-weight: bold;
+            font-size: 12px;
+            transition: all 0.1s ease;
+        }
+        
+        .piano-key.white {
+            background: white;
+            color: #333;
+        }
+        
+        .piano-key.black {
+            background: #333;
+            color: white;
+            height: 80px;
+            margin-left: -20px;
+            margin-right: -20px;
+            z-index: 1;
+        }
+        
+        .piano-key:hover {
+            background: #ddd;
+        }
+        
+        .piano-key.black:hover {
+            background: #555;
+        }
+        
+        .piano-key.pressed {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .audio-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="screen">
+            <div class="logo-container">
+                <div class="logo-circle">🎹</div>
+            </div>
+            
+            <div class="title-container">
+                <h1 class="app-name">SightReadPro</h1>
+                <p class="tagline">Master sight-reading with realistic piano sounds</p>
+            </div>
+            
+            <div class="button-container">
+                <button class="start-button" onclick="showExercise()">
+                    Start Piano Practice 🎵
+                </button>
+            </div>
+            
+            <div class="features-container">
+                <div class="feature">
+                    <div class="feature-icon">🎹</div>
+                    <div class="feature-text">Real Piano</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎼</div>
+                    <div class="feature-text">Music Notation</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📈</div>
+                    <div class="feature-text">Progress</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-text">Interactive</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Exercise Screen -->
+        <div id="exercise-screen" class="screen hidden">
+            <div class="screen-header">
+                <h1 style="font-size: 28px; margin: 0;">Piano Exercise</h1>
+                <button class="back-button" onclick="showWelcome()">← Back</button>
+            </div>
+            
+            <div class="exercise-container">
+                <div class="audio-info">
+                    <strong>🎹 Enhanced Piano Sounds:</strong> This version uses improved Web Audio API synthesis with multiple oscillators, envelope shaping, and harmonic content to create more realistic piano-like sounds.
+                </div>
+                
+                <div class="music-staff" id="music-staff">
+                    <div class="staff-line"></div>
+                    <div class="staff-line"></div>
+                    <div class="staff-line"></div>
+                    <div class="staff-line"></div>
+                    <div class="staff-line"></div>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px;">
+                        Click "Generate Exercise" to start
+                    </div>
+                </div>
+                
+                <div class="piano-keyboard" id="piano-keyboard">
+                    <div class="piano-key white" data-note="C" onclick="playPianoKey('C')">C</div>
+                    <div class="piano-key black" data-note="C#" onclick="playPianoKey('C#')">C#</div>
+                    <div class="piano-key white" data-note="D" onclick="playPianoKey('D')">D</div>
+                    <div class="piano-key black" data-note="D#" onclick="playPianoKey('D#')">D#</div>
+                    <div class="piano-key white" data-note="E" onclick="playPianoKey('E')">E</div>
+                    <div class="piano-key white" data-note="F" onclick="playPianoKey('F')">F</div>
+                    <div class="piano-key black" data-note="F#" onclick="playPianoKey('F#')">F#</div>
+                    <div class="piano-key white" data-note="G" onclick="playPianoKey('G')">G</div>
+                    <div class="piano-key black" data-note="G#" onclick="playPianoKey('G#')">G#</div>
+                    <div class="piano-key white" data-note="A" onclick="playPianoKey('A')">A</div>
+                    <div class="piano-key black" data-note="A#" onclick="playPianoKey('A#')">A#</div>
+                    <div class="piano-key white" data-note="B" onclick="playPianoKey('B')">B</div>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-button" onclick="generateExercise()" id="generate-btn">Generate Exercise</button>
+                    <button class="control-button" onclick="playExercise()" id="play-btn" disabled>Play Audio ▶️</button>
+                    <button class="control-button" onclick="checkAnswer()" id="check-btn" disabled>Check Answer</button>
+                    <button class="control-button" onclick="skipExercise()">Skip ⏭️</button>
+                </div>
+                
+                <div class="note-selector" id="note-selector" style="display: none;">
+                    <button class="note-button" onclick="selectNote('C')">C</button>
+                    <button class="note-button" onclick="selectNote('D')">D</button>
+                    <button class="note-button" onclick="selectNote('E')">E</button>
+                    <button class="note-button" onclick="selectNote('F')">F</button>
+                    <button class="note-button" onclick="selectNote('G')">G</button>
+                    <button class="note-button" onclick="selectNote('A')">A</button>
+                    <button class="note-button" onclick="selectNote('B')">B</button>
+                </div>
+                
+                <div class="feedback" id="feedback"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Piano Audio System
+        class EnhancedPianoAudio {
+            constructor() {
+                this.audioContext = null;
+                this.oscillators = [];
+                this.noteFrequencies = {
+                    'C': 261.63,
+                    'C#': 277.18,
+                    'D': 293.66,
+                    'D#': 311.13,
+                    'E': 329.63,
+                    'F': 349.23,
+                    'F#': 369.99,
+                    'G': 392.00,
+                    'G#': 415.30,
+                    'A': 440.00,
+                    'A#': 466.16,
+                    'B': 493.88
+                };
+            }
+            
+            async init() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    console.log('🎹 Enhanced piano audio system initialized');
+                    return true;
+                } catch (error) {
+                    console.error('❌ Audio initialization failed:', error);
+                    return false;
+                }
+            }
+            
+            playNote(note, duration = 1000, velocity = 0.7) {
+                if (!this.audioContext) return;
+                
+                const frequency = this.noteFrequencies[note];
+                if (!frequency) return;
+                
+                // Create multiple oscillators for richer sound
+                const oscillators = [];
+                const gainNodes = [];
+                
+                // Fundamental frequency
+                const fundamental = this.createOscillator(frequency, 'sine', velocity * 0.6);
+                oscillators.push(fundamental.osc);
+                gainNodes.push(fundamental.gain);
+                
+                // Add harmonics for piano-like sound
+                const harmonic2 = this.createOscillator(frequency * 2, 'sine', velocity * 0.3);
+                oscillators.push(harmonic2.osc);
+                gainNodes.push(harmonic2.gain);
+                
+                const harmonic3 = this.createOscillator(frequency * 3, 'sine', velocity * 0.15);
+                oscillators.push(harmonic3.osc);
+                gainNodes.push(harmonic3.osc);
+                
+                // Add some noise for attack
+                const noiseBuffer = this.createNoiseBuffer(0.1);
+                const noiseSource = this.audioContext.createBufferSource();
+                const noiseGain = this.audioContext.createGain();
+                noiseSource.buffer = noiseBuffer;
+                noiseGain.gain.setValueAtTime(velocity * 0.1, this.audioContext.currentTime);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.1);
+                
+                noiseSource.connect(noiseGain);
+                noiseGain.connect(this.audioContext.destination);
+                
+                // Start all oscillators
+                const startTime = this.audioContext.currentTime;
+                oscillators.forEach(osc => osc.start(startTime));
+                noiseSource.start(startTime);
+                
+                // Stop all after duration
+                const stopTime = startTime + duration / 1000;
+                oscillators.forEach(osc => osc.stop(stopTime));
+                noiseSource.stop(stopTime);
+                
+                // Store for cleanup
+                this.oscillators.push(...oscillators);
+                this.oscillators.push(noiseSource);
+                
+                // Clean up after duration
+                setTimeout(() => {
+                    oscillators.forEach(osc => {
+                        const index = this.oscillators.indexOf(osc);
+                        if (index > -1) this.oscillators.splice(index, 1);
+                    });
+                    const noiseIndex = this.oscillators.indexOf(noiseSource);
+                    if (noiseIndex > -1) this.oscillators.splice(noiseIndex, 1);
+                }, duration);
+            }
+            
+            createOscillator(frequency, type, velocity) {
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                
+                oscillator.type = type;
+                oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+                
+                // Piano-like envelope
+                gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(velocity, this.audioContext.currentTime + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(velocity * 0.3, this.audioContext.currentTime + 0.1);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 1.0);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                return { osc: oscillator, gain: gainNode };
+            }
+            
+            createNoiseBuffer(duration) {
+                const sampleRate = this.audioContext.sampleRate;
+                const buffer = this.audioContext.createBuffer(1, sampleRate * duration, sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                for (let i = 0; i < data.length; i++) {
+                    data[i] = (Math.random() * 2 - 1) * 0.1;
+                }
+                
+                return buffer;
+            }
+            
+            playChord(notes, duration = 2000) {
+                if (!this.audioContext) return;
+                
+                notes.forEach(note => {
+                    this.playNote(note, duration, 0.5);
+                });
+            }
+            
+            playMelody(notes, noteDuration = 500) {
+                if (!this.audioContext) return;
+                
+                notes.forEach((note, index) => {
+                    setTimeout(() => {
+                        this.playNote(note, noteDuration, 0.7);
+                    }, index * noteDuration);
+                });
+            }
+            
+            stopAll() {
+                this.oscillators.forEach(oscillator => {
+                    try {
+                        oscillator.stop();
+                    } catch (e) {
+                        // Oscillator might already be stopped
+                    }
+                });
+                this.oscillators = [];
+            }
+        }
+        
+        // Game state
+        let pianoAudio = new EnhancedPianoAudio();
+        let currentExercise = null;
+        let selectedNote = null;
+        let correctAnswer = null;
+        let gameStats = {
+            score: 0,
+            exercisesCompleted: 0,
+            accuracy: 0,
+            totalAttempts: 0,
+            correctAttempts: 0
+        };
+        
+        console.log('🎹 SightReadPro Enhanced Piano App Loading...');
+        
+        // Initialize audio on first user interaction
+        document.addEventListener('click', async () => {
+            if (!pianoAudio.audioContext) {
+                const success = await pianoAudio.init();
+                if (success) {
+                    document.getElementById('play-btn').disabled = false;
+                    document.getElementById('check-btn').disabled = false;
+                }
+            }
+        }, { once: true });
+        
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            document.getElementById(screenName + '-screen').classList.remove('hidden');
+            console.log('📱 Switched to screen:', screenName);
+        }
+        
+        function showWelcome() {
+            showScreen('welcome');
+        }
+        
+        function showExercise() {
+            showScreen('exercise');
+            resetExercise();
+        }
+        
+        function generateExercise() {
+            console.log('🎼 Generating piano exercise...');
+            
+            const exercises = [
+                {
+                    name: 'Single Note',
+                    notes: ['C'],
+                    staff: generateStaff(['C']),
+                    description: 'Listen and identify the note'
+                },
+                {
+                    name: 'Two Notes',
+                    notes: ['C', 'E'],
+                    staff: generateStaff(['C', 'E']),
+                    description: 'Listen and identify both notes'
+                },
+                {
+                    name: 'Chord',
+                    notes: ['C', 'E', 'G'],
+                    staff: generateStaff(['C', 'E', 'G']),
+                    description: 'Listen and identify the chord'
+                },
+                {
+                    name: 'Melody',
+                    notes: ['C', 'D', 'E', 'F', 'G'],
+                    staff: generateStaff(['C', 'D', 'E', 'F', 'G']),
+                    description: 'Listen to the melody and identify the notes'
+                }
+            ];
+            
+            currentExercise = exercises[Math.floor(Math.random() * exercises.length)];
+            correctAnswer = currentExercise.notes;
+            
+            // Update display
+            document.getElementById('music-staff').innerHTML = currentExercise.staff;
+            document.getElementById('feedback').textContent = currentExercise.description;
+            document.getElementById('note-selector').style.display = 'flex';
+            
+            // Reset note selection
+            selectedNote = null;
+            document.querySelectorAll('.note-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            console.log('✅ Exercise generated:', currentExercise);
+        }
+        
+        function generateStaff(notes) {
+            let staff = `
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+            `;
+            
+            notes.forEach((note, index) => {
+                const left = 20 + (index * 15) + '%';
+                const top = 45 + '%';
+                staff += `<div class="note" style="left: ${left}; top: ${top};" data-note="${note}"></div>`;
+            });
+            
+            return staff;
+        }
+        
+        function playExercise() {
+            if (!currentExercise || !pianoAudio.audioContext) {
+                document.getElementById('feedback').textContent = 'Please generate an exercise first and ensure audio is enabled';
+                return;
+            }
+            
+            console.log('🔊 Playing piano exercise...');
+            
+            if (currentExercise.notes.length === 1) {
+                pianoAudio.playNote(currentExercise.notes[0], 1000, 0.8);
+            } else if (currentExercise.name === 'Chord') {
+                pianoAudio.playChord(currentExercise.notes, 2000);
+            } else {
+                pianoAudio.playMelody(currentExercise.notes, 600);
+            }
+            
+            document.getElementById('play-btn').textContent = 'Playing...';
+            document.getElementById('play-btn').disabled = true;
+            
+            setTimeout(() => {
+                document.getElementById('play-btn').textContent = 'Play Audio ▶️';
+                document.getElementById('play-btn').disabled = false;
+            }, currentExercise.notes.length * 600 + 1000);
+        }
+        
+        function playPianoKey(note) {
+            if (!pianoAudio.audioContext) return;
+            
+            // Visual feedback
+            const key = document.querySelector(`[data-note="${note}"]`);
+            key.classList.add('pressed');
+            
+            // Play note
+            pianoAudio.playNote(note, 800, 0.7);
+            
+            // Remove visual feedback
+            setTimeout(() => {
+                key.classList.remove('pressed');
+            }, 200);
+        }
+        
+        function selectNote(note) {
+            selectedNote = note;
+            document.querySelectorAll('.note-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            // Play the selected note
+            pianoAudio.playNote(note, 500, 0.6);
+            
+            console.log('🎵 Selected note:', note);
+        }
+        
+        function checkAnswer() {
+            if (!selectedNote || !correctAnswer) {
+                document.getElementById('feedback').textContent = 'Please select a note first';
+                return;
+            }
+            
+            gameStats.totalAttempts++;
+            
+            let isCorrect = false;
+            if (correctAnswer.length === 1) {
+                isCorrect = selectedNote === correctAnswer[0];
+            } else {
+                isCorrect = correctAnswer.includes(selectedNote);
+            }
+            
+            if (isCorrect) {
+                gameStats.correctAttempts++;
+                gameStats.score += 10;
+                gameStats.exercisesCompleted++;
+                gameStats.accuracy = Math.round((gameStats.correctAttempts / gameStats.totalAttempts) * 100);
+                
+                document.getElementById('feedback').textContent = '✅ Correct! Great job! +10 points';
+                document.getElementById('feedback').style.color = '#4CAF50';
+                
+                // Play success chord
+                pianoAudio.playChord(['C', 'E', 'G'], 300);
+                
+                updateStats();
+            } else {
+                document.getElementById('feedback').textContent = `❌ Not quite right. The correct answer was: ${correctAnswer.join(', ')}`;
+                document.getElementById('feedback').style.color = '#f44336';
+                
+                // Play error sound
+                pianoAudio.playNote('C', 300, 0.3);
+            }
+            
+            console.log('📊 Stats:', gameStats);
+        }
+        
+        function skipExercise() {
+            console.log('⏭️ Skipping exercise...');
+            pianoAudio.stopAll();
+            document.getElementById('feedback').textContent = 'Exercise skipped. Try another one!';
+            document.getElementById('feedback').style.color = 'white';
+            resetExercise();
+        }
+        
+        function resetExercise() {
+            pianoAudio.stopAll();
+            selectedNote = null;
+            correctAnswer = null;
+            currentExercise = null;
+            
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').style.color = 'white';
+            document.getElementById('note-selector').style.display = 'none';
+            
+            document.getElementById('music-staff').innerHTML = `
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px;">
+                    Click "Generate Exercise" to start
+                </div>
+            `;
+            
+            document.querySelectorAll('.note-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+        }
+        
+        function updateStats() {
+            console.log('📈 Updated stats:', gameStats);
+        }
+        
+        // Add interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ SightReadPro Enhanced Piano App Loaded!');
+            
+            // Add hover effects to buttons
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    if (!this.disabled) {
+                        this.style.transform = 'scale(1.05)';
+                    }
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
