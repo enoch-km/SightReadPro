@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SightReadPro - VexFlow Edition</title>
+    <script src="https://unpkg.com/vexflow@4.2.2/build/vexflow.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            overflow-y: auto;
+        }
+        
+        #app {
+            width: 100vw;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .screen {
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .hidden { display: none; }
+        
+        .logo-container {
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .logo-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            font-size: 60px;
+            margin: 0 auto;
+        }
+        
+        .title-container {
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+        
+        .app-name {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 18px;
+            opacity: 0.9;
+            line-height: 24px;
+        }
+        
+        .button-container {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 40px;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+        
+        .start-button, .practice-button, .nav-button {
+            width: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 18px 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+            margin-bottom: 15px;
+        }
+        
+        .secondary-button {
+            background: linear-gradient(90deg, #2196F3, #1976D2);
+        }
+        
+        .start-button:hover, .practice-button:hover, .nav-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .features-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease-out 0.9s both;
+        }
+        
+        .feature {
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .feature-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .screen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+        
+        .back-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        
+        .exercise-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .music-notation {
+            background: white;
+            border-radius: 10px;
+            margin: 20px 0;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .notation-canvas {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .control-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .control-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .note-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .note-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .note-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .note-button.selected {
+            background: #4CAF50;
+            border-color: #45a049;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            min-height: 30px;
+        }
+        
+        .difficulty-selector {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .difficulty-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .difficulty-button.selected {
+            background: #4CAF50;
+            border-color: #45a049;
+        }
+        
+        .stats-display {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="screen">
+            <div class="logo-container">
+                <div class="logo-circle">🎼</div>
+            </div>
+            
+            <div class="title-container">
+                <h1 class="app-name">SightReadPro</h1>
+                <p class="tagline">Master sight-reading with professional music notation</p>
+            </div>
+            
+            <div class="button-container">
+                <button class="start-button" onclick="showExercise()">
+                    Start Notation Practice 🎵
+                </button>
+            </div>
+            
+            <div class="features-container">
+                <div class="feature">
+                    <div class="feature-icon">🎼</div>
+                    <div class="feature-text">VexFlow Notation</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎹</div>
+                    <div class="feature-text">Piano Sounds</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-text">Progress Tracking</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-text">Multiple Levels</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Exercise Screen -->
+        <div id="exercise-screen" class="screen hidden">
+            <div class="screen-header">
+                <h1 style="font-size: 28px; margin: 0;">Music Notation Exercise</h1>
+                <button class="back-button" onclick="showWelcome()">← Back</button>
+            </div>
+            
+            <div class="exercise-container">
+                <div class="stats-display">
+                    <div class="stat-item">
+                        <div class="stat-value" id="score-display">0</div>
+                        <div class="stat-label">Score</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="streak-display">0</div>
+                        <div class="stat-label">Streak</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="accuracy-display">0%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                </div>
+                
+                <div class="difficulty-selector">
+                    <button class="difficulty-button" onclick="setDifficulty('beginner')" id="beginner-btn">Beginner</button>
+                    <button class="difficulty-button" onclick="setDifficulty('intermediate')" id="intermediate-btn">Intermediate</button>
+                    <button class="difficulty-button" onclick="setDifficulty('advanced')" id="advanced-btn">Advanced</button>
+                </div>
+                
+                <div class="music-notation">
+                    <div id="notation-canvas" class="notation-canvas"></div>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-button" onclick="generateExercise()" id="generate-btn">Generate Exercise</button>
+                    <button class="control-button" onclick="playExercise()" id="play-btn" disabled>Play Audio ▶️</button>
+                    <button class="control-button" onclick="checkAnswer()" id="check-btn" disabled>Check Answer</button>
+                    <button class="control-button" onclick="skipExercise()">Skip ⏭️</button>
+                </div>
+                
+                <div class="note-selector" id="note-selector" style="display: none;">
+                    <button class="note-button" onclick="selectNote('C')">C</button>
+                    <button class="note-button" onclick="selectNote('D')">D</button>
+                    <button class="note-button" onclick="selectNote('E')">E</button>
+                    <button class="note-button" onclick="selectNote('F')">F</button>
+                    <button class="note-button" onclick="selectNote('G')">G</button>
+                    <button class="note-button" onclick="selectNote('A')">A</button>
+                    <button class="note-button" onclick="selectNote('B')">B</button>
+                </div>
+                
+                <div class="feedback" id="feedback"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // VexFlow Music Notation System
+        class VexFlowNotation {
+            constructor() {
+                this.renderer = null;
+                this.context = null;
+                this.stave = null;
+                this.voice = null;
+                this.formatter = null;
+                this.currentNotes = [];
+                this.difficulty = 'beginner';
+            }
+            
+            init() {
+                const canvas = document.getElementById('notation-canvas');
+                this.renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
+                this.context = this.renderer.getContext();
+                this.context.setFont('Arial', 10);
+                
+                console.log('🎼 VexFlow notation system initialized');
+            }
+            
+            clear() {
+                if (this.context) {
+                    this.context.clear();
+                }
+            }
+            
+            drawStaff() {
+                this.clear();
+                
+                // Create a stave
+                this.stave = new Vex.Flow.Stave(50, 50, 600);
+                this.stave.addClef('treble').addTimeSignature('4/4');
+                this.stave.setContext(this.context).draw();
+            }
+            
+            drawNotes(notes) {
+                this.drawStaff();
+                
+                // Create notes
+                const vexNotes = notes.map(note => {
+                    return new Vex.Flow.StaveNote({
+                        clef: 'treble',
+                        keys: [note],
+                        duration: 'q'
+                    });
+                });
+                
+                // Create a voice in 4/4
+                this.voice = new Vex.Flow.Voice({num_beats: 4, beat_value: 4});
+                this.voice.addTickables(vexNotes);
+                
+                // Format and draw
+                this.formatter = new Vex.Flow.Formatter().joinVoices([this.voice]);
+                this.formatter.format([this.voice], 500);
+                this.voice.draw(this.context, this.stave);
+                
+                this.currentNotes = notes;
+            }
+            
+            drawChord(notes) {
+                this.drawStaff();
+                
+                // Create chord
+                const chord = new Vex.Flow.StaveNote({
+                    clef: 'treble',
+                    keys: notes,
+                    duration: 'w'
+                });
+                
+                // Create a voice in 4/4
+                this.voice = new Vex.Flow.Voice({num_beats: 4, beat_value: 4});
+                this.voice.addTickables([chord]);
+                
+                // Format and draw
+                this.formatter = new Vex.Flow.Formatter().joinVoices([this.voice]);
+                this.formatter.format([this.voice], 500);
+                this.voice.draw(this.context, this.stave);
+                
+                this.currentNotes = notes;
+            }
+            
+            drawScale(notes) {
+                this.drawStaff();
+                
+                // Create scale notes
+                const vexNotes = notes.map(note => {
+                    return new Vex.Flow.StaveNote({
+                        clef: 'treble',
+                        keys: [note],
+                        duration: 'q'
+                    });
+                });
+                
+                // Add ties between notes
+                for (let i = 0; i < vexNotes.length - 1; i++) {
+                    Vex.Flow.StaveTie({
+                        first_note: vexNotes[i],
+                        last_note: vexNotes[i + 1]
+                    }).setContext(this.context).draw();
+                }
+                
+                // Create a voice
+                this.voice = new Vex.Flow.Voice({num_beats: 4, beat_value: 4});
+                this.voice.addTickables(vexNotes);
+                
+                // Format and draw
+                this.formatter = new Vex.Flow.Formatter().joinVoices([this.voice]);
+                this.formatter.format([this.voice], 500);
+                this.voice.draw(this.context, this.stave);
+                
+                this.currentNotes = notes;
+            }
+        }
+        
+        // Audio system
+        class AudioSystem {
+            constructor() {
+                this.audioContext = null;
+                this.oscillators = [];
+                this.noteFrequencies = {
+                    'C/4': 261.63,
+                    'D/4': 293.66,
+                    'E/4': 329.63,
+                    'F/4': 349.23,
+                    'G/4': 392.00,
+                    'A/4': 440.00,
+                    'B/4': 493.88,
+                    'C/5': 523.25,
+                    'D/5': 587.33,
+                    'E/5': 659.25,
+                    'F/5': 698.46,
+                    'G/5': 783.99,
+                    'A/5': 880.00,
+                    'B/5': 987.77
+                };
+            }
+            
+            async init() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    console.log('🎵 Audio system initialized');
+                    return true;
+                } catch (error) {
+                    console.error('❌ Audio initialization failed:', error);
+                    return false;
+                }
+            }
+            
+            playNote(note, duration = 1000) {
+                if (!this.audioContext) return;
+                
+                const frequency = this.noteFrequencies[note];
+                if (!frequency) return;
+                
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+                
+                gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.3, this.audioContext.currentTime + 0.1);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration / 1000);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                oscillator.start(this.audioContext.currentTime);
+                oscillator.stop(this.audioContext.currentTime + duration / 1000);
+                
+                this.oscillators.push(oscillator);
+                
+                setTimeout(() => {
+                    const index = this.oscillators.indexOf(oscillator);
+                    if (index > -1) {
+                        this.oscillators.splice(index, 1);
+                    }
+                }, duration);
+            }
+            
+            playChord(notes, duration = 2000) {
+                if (!this.audioContext) return;
+                
+                notes.forEach(note => {
+                    this.playNote(note, duration);
+                });
+            }
+            
+            playMelody(notes, noteDuration = 500) {
+                if (!this.audioContext) return;
+                
+                notes.forEach((note, index) => {
+                    setTimeout(() => {
+                        this.playNote(note, noteDuration);
+                    }, index * noteDuration);
+                });
+            }
+            
+            stopAll() {
+                this.oscillators.forEach(oscillator => {
+                    try {
+                        oscillator.stop();
+                    } catch (e) {
+                        // Oscillator might already be stopped
+                    }
+                });
+                this.oscillators = [];
+            }
+        }
+        
+        // Game state
+        let notation = new VexFlowNotation();
+        let audioSystem = new AudioSystem();
+        let currentExercise = null;
+        let selectedNote = null;
+        let correctAnswer = null;
+        let gameStats = {
+            score: 0,
+            streak: 0,
+            totalAttempts: 0,
+            correctAttempts: 0,
+            accuracy: 0
+        };
+        
+        console.log('🎼 SightReadPro VexFlow App Loading...');
+        
+        // Initialize systems
+        document.addEventListener('DOMContentLoaded', async () => {
+            notation.init();
+            await audioSystem.init();
+            updateStats();
+            console.log('✅ SightReadPro VexFlow App Loaded!');
+        });
+        
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            document.getElementById(screenName + '-screen').classList.remove('hidden');
+            console.log('📱 Switched to screen:', screenName);
+        }
+        
+        function showWelcome() {
+            showScreen('welcome');
+        }
+        
+        function showExercise() {
+            showScreen('exercise');
+            setDifficulty('beginner');
+        }
+        
+        function setDifficulty(level) {
+            notation.difficulty = level;
+            
+            // Update button states
+            document.querySelectorAll('.difficulty-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.getElementById(level + '-btn').classList.add('selected');
+            
+            console.log('🎯 Difficulty set to:', level);
+        }
+        
+        function generateExercise() {
+            console.log('🎼 Generating VexFlow exercise...');
+            
+            const exercises = {
+                beginner: [
+                    {
+                        name: 'Single Note',
+                        notes: ['C/4'],
+                        type: 'single',
+                        description: 'Identify the single note'
+                    },
+                    {
+                        name: 'Two Notes',
+                        notes: ['C/4', 'E/4'],
+                        type: 'melody',
+                        description: 'Identify both notes in sequence'
+                    }
+                ],
+                intermediate: [
+                    {
+                        name: 'Triad Chord',
+                        notes: ['C/4', 'E/4', 'G/4'],
+                        type: 'chord',
+                        description: 'Identify the chord'
+                    },
+                    {
+                        name: 'Scale Fragment',
+                        notes: ['C/4', 'D/4', 'E/4', 'F/4'],
+                        type: 'scale',
+                        description: 'Identify the scale fragment'
+                    }
+                ],
+                advanced: [
+                    {
+                        name: 'Complex Chord',
+                        notes: ['C/4', 'E/4', 'G/4', 'B/4'],
+                        type: 'chord',
+                        description: 'Identify the complex chord'
+                    },
+                    {
+                        name: 'Melodic Sequence',
+                        notes: ['C/4', 'E/4', 'G/4', 'C/5', 'E/5'],
+                        type: 'melody',
+                        description: 'Identify the melodic sequence'
+                    }
+                ]
+            };
+            
+            const levelExercises = exercises[notation.difficulty];
+            currentExercise = levelExercises[Math.floor(Math.random() * levelExercises.length)];
+            correctAnswer = currentExercise.notes;
+            
+            // Draw notation based on type
+            switch (currentExercise.type) {
+                case 'single':
+                case 'melody':
+                    notation.drawNotes(currentExercise.notes);
+                    break;
+                case 'chord':
+                    notation.drawChord(currentExercise.notes);
+                    break;
+                case 'scale':
+                    notation.drawScale(currentExercise.notes);
+                    break;
+            }
+            
+            // Update UI
+            document.getElementById('feedback').textContent = currentExercise.description;
+            document.getElementById('note-selector').style.display = 'flex';
+            document.getElementById('play-btn').disabled = false;
+            document.getElementById('check-btn').disabled = false;
+            
+            // Reset note selection
+            selectedNote = null;
+            document.querySelectorAll('.note-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            console.log('✅ Exercise generated:', currentExercise);
+        }
+        
+        function playExercise() {
+            if (!currentExercise || !audioSystem.audioContext) {
+                document.getElementById('feedback').textContent = 'Please generate an exercise first and ensure audio is enabled';
+                return;
+            }
+            
+            console.log('🔊 Playing exercise audio...');
+            
+            if (currentExercise.type === 'chord') {
+                audioSystem.playChord(currentExercise.notes, 2000);
+            } else {
+                audioSystem.playMelody(currentExercise.notes, 600);
+            }
+            
+            document.getElementById('play-btn').textContent = 'Playing...';
+            document.getElementById('play-btn').disabled = true;
+            
+            setTimeout(() => {
+                document.getElementById('play-btn').textContent = 'Play Audio ▶️';
+                document.getElementById('play-btn').disabled = false;
+            }, currentExercise.notes.length * 600 + 1000);
+        }
+        
+        function selectNote(note) {
+            selectedNote = note;
+            document.querySelectorAll('.note-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            // Play the selected note
+            audioSystem.playNote(note + '/4', 500);
+            
+            console.log('🎵 Selected note:', note);
+        }
+        
+        function checkAnswer() {
+            if (!selectedNote || !correctAnswer) {
+                document.getElementById('feedback').textContent = 'Please select a note first';
+                return;
+            }
+            
+            gameStats.totalAttempts++;
+            
+            let isCorrect = false;
+            if (correctAnswer.length === 1) {
+                isCorrect = selectedNote + '/4' === correctAnswer[0];
+            } else {
+                // For multiple notes, check if selected note is in the answer
+                isCorrect = correctAnswer.some(note => note.startsWith(selectedNote));
+            }
+            
+            if (isCorrect) {
+                gameStats.correctAttempts++;
+                gameStats.score += 10;
+                gameStats.streak++;
+                gameStats.accuracy = Math.round((gameStats.correctAttempts / gameStats.totalAttempts) * 100);
+                
+                document.getElementById('feedback').textContent = '✅ Correct! Great job! +10 points';
+                document.getElementById('feedback').style.color = '#4CAF50';
+                
+                // Play success sound
+                audioSystem.playMelody(['C/4', 'E/4', 'G/4'], 200);
+                
+                updateStats();
+            } else {
+                gameStats.streak = 0;
+                gameStats.accuracy = Math.round((gameStats.correctAttempts / gameStats.totalAttempts) * 100);
+                
+                const correctNotes = correctAnswer.map(note => note.split('/')[0]).join(', ');
+                document.getElementById('feedback').textContent = `❌ Not quite right. The correct answer was: ${correctNotes}`;
+                document.getElementById('feedback').style.color = '#f44336';
+                
+                // Play error sound
+                audioSystem.playNote('C/4', 300);
+                
+                updateStats();
+            }
+            
+            console.log('📊 Stats:', gameStats);
+        }
+        
+        function skipExercise() {
+            console.log('⏭️ Skipping exercise...');
+            audioSystem.stopAll();
+            gameStats.streak = 0;
+            document.getElementById('feedback').textContent = 'Exercise skipped. Try another one!';
+            document.getElementById('feedback').style.color = 'white';
+            updateStats();
+        }
+        
+        function updateStats() {
+            document.getElementById('score-display').textContent = gameStats.score;
+            document.getElementById('streak-display').textContent = gameStats.streak;
+            document.getElementById('accuracy-display').textContent = gameStats.accuracy + '%';
+        }
+        
+        // Add interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    if (!this.disabled) {
+                        this.style.transform = 'scale(1.05)';
+                    }
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
