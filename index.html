@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SightReadPro - Master Sight Reading</title>
+    <meta name="description" content="Master sight-reading with fun, daily exercises. Upload your own scores and get personalized practice exercises.">
+    <meta name="keywords" content="sight reading, music, piano, practice, exercises, sheet music">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            overflow-y: auto;
+        }
+        
+        #app {
+            width: 100vw;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .screen {
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+            width: 100%;
+            max-width: 1000px;
+        }
+        
+        .welcome-screen {
+            text-align: center;
+        }
+        
+        .dashboard-screen {
+            width: 100%;
+        }
+        
+        .upload-screen {
+            width: 100%;
+        }
+        
+        .practice-screen {
+            width: 100%;
+        }
+        
+        .exercise-screen {
+            width: 100%;
+        }
+        
+        .profile-screen {
+            width: 100%;
+        }
+        
+        .logo-container {
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .logo-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            font-size: 60px;
+            margin: 0 auto;
+        }
+        
+        .title-container {
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+        
+        .app-name {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 18px;
+            opacity: 0.9;
+            line-height: 24px;
+        }
+        
+        .button-container {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 40px;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+        
+        .start-button, .practice-button, .nav-button {
+            width: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 18px 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+            margin-bottom: 15px;
+        }
+        
+        .secondary-button {
+            background: linear-gradient(90deg, #2196F3, #1976D2);
+        }
+        
+        .upload-button {
+            background: linear-gradient(90deg, #FF9800, #F57C00);
+        }
+        
+        .danger-button {
+            background: linear-gradient(90deg, #f44336, #d32f2f);
+        }
+        
+        .start-button:hover, .practice-button:hover, .nav-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .features-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease-out 0.9s both;
+        }
+        
+        .feature {
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .feature-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .screen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+        
+        .back-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .upload-area {
+            border: 3px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 60px 40px;
+            margin: 30px 0;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .upload-area.dragover {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .upload-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .upload-subtext {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .uploaded-file {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .file-icon {
+            font-size: 24px;
+        }
+        
+        .file-details h3 {
+            margin-bottom: 5px;
+        }
+        
+        .file-details p {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .remove-file {
+            background: rgba(244, 67, 54, 0.2);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        
+        .analysis-results {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .analysis-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .analysis-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .analysis-label {
+            font-weight: bold;
+        }
+        
+        .analysis-value {
+            opacity: 0.8;
+        }
+        
+        .difficulty-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .difficulty-beginner {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+        
+        .difficulty-intermediate {
+            background: rgba(255, 193, 7, 0.3);
+            color: #FFC107;
+        }
+        
+        .difficulty-advanced {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+        
+        .practice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .practice-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .practice-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .practice-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .practice-description {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+        
+        .difficulty {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .exercise-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .music-staff {
+            background: white;
+            height: 200px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-size: 24px;
+            position: relative;
+        }
+        
+        .staff-line {
+            position: absolute;
+            width: 80%;
+            height: 2px;
+            background: #333;
+        }
+        
+        .staff-line:nth-child(1) { top: 20%; }
+        .staff-line:nth-child(2) { top: 30%; }
+        .staff-line:nth-child(3) { top: 40%; }
+        .staff-line:nth-child(4) { top: 50%; }
+        .staff-line:nth-child(5) { top: 60%; }
+        
+        .note {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #333;
+            border-radius: 50%;
+            top: 45%;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .control-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .control-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .achievement-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            opacity: 0.6;
+        }
+        
+        .achievement-card.unlocked {
+            opacity: 1;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+        }
+        
+        .achievement-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .achievement-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .achievement-desc {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .score-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: #FFD700;
+            margin: 20px 0;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="screen welcome-screen">
+            <div class="logo-container">
+                <div class="logo-circle">♪</div>
+            </div>
+            
+            <div class="title-container">
+                <h1 class="app-name">SightReadPro</h1>
+                <p class="tagline">Master sight-reading with fun, daily exercises</p>
+            </div>
+            
+            <div class="button-container">
+                <button class="start-button" onclick="showDashboard()">
+                    Start Practicing →
+                </button>
+            </div>
+            
+            <div class="features-container">
+                <div class="feature">
+                    <div class="feature-icon">📈</div>
+                    <div class="feature-text">Track Progress</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔥</div>
+                    <div class="feature-text">Build Streaks</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⭐</div>
+                    <div class="feature-text">Earn XP</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard Screen -->
+        <div id="dashboard-screen" class="screen dashboard-screen hidden">
+            <div class="screen-header">
+                <h1 style="font-size: 28px; margin: 0;">Dashboard</h1>
+                <button class="back-button" onclick="showWelcome()">← Back</button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="xp-display">150</div>
+                    <div class="stat-label">XP Points</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="streak-display">5</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="level-display">Level 2</div>
+                    <div class="stat-label">Current Level</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="exercises-display">12</div>
+                    <div class="stat-label">Exercises Completed</div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button class="practice-button" onclick="showPractice()">
+                    Start Today's Practice
+                </button>
+                <button class="nav-button upload-button" onclick="showUpload()">
+                    Upload Your Score 📄
+                </button>
+                <button class="nav-button secondary-button" onclick="showProfile()">
+                    View Profile
+                </button>
+            </div>
+        </div>
+        
+        <!-- Upload Screen -->
+        <div id="upload-screen" class="screen upload-screen hidden">
+            <div class="screen-header">
+                <h1 style="font-size: 28px; margin: 0;">Upload Your Score</h1>
+                <button class="back-button" onclick="showDashboard()">← Back</button>
+            </div>
+            
+            <div class="upload-area" onclick="document.getElementById('file-input').click()" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">Drop your PDF or image here</div>
+                <div class="upload-subtext">or click to browse files</div>
+                <div class="upload-subtext">Supports: PDF, JPG, PNG, GIF</div>
+            </div>
+            
+            <input type="file" id="file-input" class="file-input" accept=".pdf,.jpg,.jpeg,.png,.gif" onchange="handleFileSelect(event)">
+            
+            <div id="uploaded-file-container" class="hidden">
+                <div class="uploaded-file">
+                    <div class="file-info">
+                        <div class="file-icon" id="file-icon">📄</div>
+                        <div class="file-details">
+                            <h3 id="file-name">Score.pdf</h3>
+                            <p id="file-size">2.3 MB</p>
+                        </div>
+                    </div>
+                    <button class="remove-file" onclick="removeFile()">Remove</button>
+                </div>
+                
+                <button class="practice-button" onclick="analyzeScore()">
+                    Analyze Score & Generate Exercises
+                </button>
+            </div>
+            
+            <div id="analysis-results" class="analysis-results hidden">
+                <div class="analysis-title">Score Analysis Results</div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Key Signature:</span>
+                    <span class="analysis-value" id="key-signature">C Major</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Time Signature:</span>
+                    <span class="analysis-value" id="time-signature">4/4</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Difficulty Level:</span>
+                    <span class="analysis-value">
+                        <span class="difficulty-badge difficulty-intermediate" id="difficulty-level">Intermediate</span>
+                    </span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Note Range:</span>
+                    <span class="analysis-value" id="note-range">C4 - G5</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Tempo:</span>
+                    <span class="analysis-value" id="tempo">120 BPM</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Rhythm Patterns:</span>
+                    <span class="analysis-value" id="rhythm-patterns">Quarter, Eighth, Half notes</span>
+                </div>
+                
+                <div style="margin-top: 30px; text-align: center;">
+                    <button class="practice-button" onclick="generateCustomExercises()">
+                        Generate Custom Exercises
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Practice Screen -->
+        <div id="practice-screen" class="screen practice-screen hidden">
+            <div class="screen-header">
+                <h1 style="font-size: 28px; margin: 0;">Practice Exercises</h1>
+                <button class="back-button" onclick="showDashboard()">← Back</button>
+            </div>
+            
+            <div class="practice-grid">
+                <div class="practice-card" onclick="startExercise('beginner-notes')">
+                    <div class="difficulty difficulty-beginner">Beginner</div>
+                    <div class="practice-title">Basic Notes</div>
+                    <div class="practice-description">Learn to identify basic notes on the staff</div>
+                    <div style="font-size: 12px; opacity: 0.7;">5 exercises • 10 XP each</div>
+                </div>
+                
+                <div class="practice-card" onclick="startExercise('intermediate-rhythm')">
+                    <div class="difficulty difficulty-intermediate">Intermediate</div>
+                    <div class="practice-title">Rhythm Patterns</div>
+                    <div class="practice-description">Master different rhythm patterns and timing</div>
+                    <div style="font-size: 12px; opacity: 0.7;">8 exercises • 15 XP each</div>
+                </div>
+                
+                <div class="practice-card" onclick="startExercise('advanced-scales')">
+                    <div class="difficulty difficulty-advanced">Advanced</div>
+                    <div class="practice-title">Scale Recognition</div>
+                    <div class="practice-description">Identify major and minor scales quickly</div>
+                    <div style="font-size: 12px; opacity: 0.7;">10 exercises • 25 XP each</div>
+                </div>
+                
+                <div class="practice-card" onclick="startExercise('chord-progressions')">
+                    <div class="difficulty difficulty-intermediate">Intermediate</div>
+                    <div class="practice-title">Chord Progressions</div>
+                    <div class="practice-description">Recognize common chord progressions</div>
+                    <div style="font-size: 12px; opacity: 0.7;">6 exercises • 20 XP each</div>
+                </div>
+                
+                <div class="practice-card" onclick="startExercise('sight-reading')">
+                    <div class="difficulty difficulty-advanced">Advanced</div>
+                    <div class="practice-title">Sight Reading</div>
+                    <div class="practice-description">Full pieces with time pressure</div>
+                    <div style="font-size: 12px; opacity: 0.7;">4 exercises • 30 XP each</div>
+                </div>
+                
+                <div class="practice-card" onclick="startExercise('interval-training')">
+                    <div class="difficulty difficulty-beginner">Beginner</div>
+                    <div class="practice-title">Interval Training</div>
+                    <div class="practice-description">Identify intervals between notes</div>
+                    <div style="font-size: 12px; opacity: 0.7;">7 exercises • 12 XP each</div>
+                </div>
+                
+                <div class="practice-card" onclick="startExercise('custom-score')" id="custom-exercise-card" style="display: none;">
+                    <div class="difficulty difficulty-intermediate">Custom</div>
+                    <div class="practice-title">Your Uploaded Score</div>
+                    <div class="practice-description">Exercises based on your uploaded music</div>
+                    <div style="font-size: 12px; opacity: 0.7;">Generated exercises • 20 XP each</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Exercise Screen -->
+        <div id="exercise-screen" class="screen exercise-screen hidden">
+            <div class="screen-header">
+                <h1 style="font-size: 28px; margin: 0;" id="exercise-title">Exercise</h1>
+                <button class="back-button" onclick="showPractice()">← Back</button>
+            </div>
+            
+            <div class="exercise-container">
+                <div class="timer" id="timer">Time: 0:00</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                
+                <div class="music-staff" id="music-staff">
+                    <div class="staff-line"></div>
+                    <div class="staff-line"></div>
+                    <div class="staff-line"></div>
+                    <div class="staff-line"></div>
+                    <div class="staff-line"></div>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px;">
+                        Click "Generate Exercise" to start
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-button" onclick="generateExercise()">Generate Exercise</button>
+                    <button class="control-button" onclick="playExercise()">Play Audio</button>
+                    <button class="control-button" onclick="checkAnswer()">Check Answer</button>
+                    <button class="control-button" onclick="skipExercise()">Skip</button>
+                </div>
+                
+                <div id="feedback" style="margin-top: 20px; font-size: 18px; font-weight: bold;"></div>
+            </div>
+        </div>
+        
+        <!-- Profile Screen -->
+        <div id="profile-screen" class="screen profile-screen hidden">
+            <div class="screen-header">
+                <h1 style="font-size: 28px; margin: 0;">Profile & Achievements</h1>
+                <button class="back-button" onclick="showDashboard()">← Back</button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">150</div>
+                    <div class="stat-label">Total XP</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Exercises Done</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">85%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+            </div>
+            
+            <h2 style="margin: 30px 0 20px 0; text-align: center;">Achievements</h2>
+            <div class="achievement-grid">
+                <div class="achievement-card unlocked">
+                    <div class="achievement-icon">🎯</div>
+                    <div class="achievement-title">First Steps</div>
+                    <div class="achievement-desc">Complete your first exercise</div>
+                </div>
+                <div class="achievement-card unlocked">
+                    <div class="achievement-icon">🔥</div>
+                    <div class="achievement-title">Streak Master</div>
+                    <div class="achievement-desc">Practice for 5 days in a row</div>
+                </div>
+                <div class="achievement-card unlocked">
+                    <div class="achievement-icon">⭐</div>
+                    <div class="achievement-title">XP Collector</div>
+                    <div class="achievement-desc">Earn 100 XP points</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">🏆</div>
+                    <div class="achievement-title">Perfect Score</div>
+                    <div class="achievement-desc">Get 100% accuracy on 10 exercises</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">⚡</div>
+                    <div class="achievement-title">Speed Demon</div>
+                    <div class="achievement-desc">Complete 5 exercises in under 30 seconds</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">🎼</div>
+                    <div class="achievement-title">Music Master</div>
+                    <div class="achievement-desc">Complete all exercise categories</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let currentScreen = 'welcome';
+        let gameStats = {
+            xp: 150,
+            streak: 5,
+            level: 2,
+            exercisesCompleted: 12,
+            accuracy: 85
+        };
+        
+        let currentExercise = null;
+        let exerciseTimer = null;
+        let timeElapsed = 0;
+        let uploadedFile = null;
+        let scoreAnalysis = null;
+        
+        console.log('🎵 SightReadPro Web App Loading...');
+        
+        function showScreen(screenName) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            // Show target screen
+            document.getElementById(screenName + '-screen').classList.remove('hidden');
+            currentScreen = screenName;
+            
+            console.log('📱 Switched to screen:', screenName);
+        }
+        
+        function showWelcome() {
+            showScreen('welcome');
+        }
+        
+        function showDashboard() {
+            showScreen('dashboard');
+            updateStats();
+        }
+        
+        function showUpload() {
+            showScreen('upload');
+        }
+        
+        function showPractice() {
+            showScreen('practice');
+        }
+        
+        function showExercise(exerciseType) {
+            showScreen('exercise');
+            currentExercise = exerciseType;
+            document.getElementById('exercise-title').textContent = getExerciseTitle(exerciseType);
+            resetExercise();
+        }
+        
+        function showProfile() {
+            showScreen('profile');
+        }
+        
+        function getExerciseTitle(exerciseType) {
+            const titles = {
+                'beginner-notes': 'Basic Notes',
+                'intermediate-rhythm': 'Rhythm Patterns',
+                'advanced-scales': 'Scale Recognition',
+                'chord-progressions': 'Chord Progressions',
+                'sight-reading': 'Sight Reading',
+                'interval-training': 'Interval Training',
+                'custom-score': 'Your Custom Score'
+            };
+            return titles[exerciseType] || 'Exercise';
+        }
+        
+        function startExercise(exerciseType) {
+            console.log('🎯 Starting exercise:', exerciseType);
+            showExercise(exerciseType);
+        }
+        
+        // File upload functions
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                processFile(file);
+            }
+        }
+        
+        function handleDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('dragover');
+            
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                processFile(files[0]);
+            }
+        }
+        
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('dragover');
+        }
+        
+        function handleDragLeave(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('dragover');
+        }
+        
+        function processFile(file) {
+            console.log('📄 Processing file:', file.name);
+            
+            uploadedFile = file;
+            
+            // Update file display
+            document.getElementById('file-name').textContent = file.name;
+            document.getElementById('file-size').textContent = formatFileSize(file.size);
+            
+            // Set appropriate icon
+            const icon = getFileIcon(file.type);
+            document.getElementById('file-icon').textContent = icon;
+            
+            // Show uploaded file container
+            document.getElementById('uploaded-file-container').classList.remove('hidden');
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function getFileIcon(fileType) {
+            if (fileType.includes('pdf')) return '📄';
+            if (fileType.includes('image')) return '🖼️';
+            return '📁';
+        }
+        
+        function removeFile() {
+            uploadedFile = null;
+            document.getElementById('uploaded-file-container').classList.add('hidden');
+            document.getElementById('analysis-results').classList.add('hidden');
+            document.getElementById('file-input').value = '';
+        }
+        
+        function analyzeScore() {
+            console.log('🔍 Analyzing score...');
+            
+            // Simulate analysis with loading
+            const button = event.target;
+            const originalText = button.textContent;
+            button.innerHTML = '<span class="loading"></span> Analyzing...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                // Simulate analysis results
+                scoreAnalysis = {
+                    keySignature: 'C Major',
+                    timeSignature: '4/4',
+                    difficulty: 'Intermediate',
+                    noteRange: 'C4 - G5',
+                    tempo: '120 BPM',
+                    rhythmPatterns: 'Quarter, Eighth, Half notes'
+                };
+                
+                // Update analysis display
+                document.getElementById('key-signature').textContent = scoreAnalysis.keySignature;
+                document.getElementById('time-signature').textContent = scoreAnalysis.timeSignature;
+                document.getElementById('difficulty-level').textContent = scoreAnalysis.difficulty;
+                document.getElementById('note-range').textContent = scoreAnalysis.noteRange;
+                document.getElementById('tempo').textContent = scoreAnalysis.tempo;
+                document.getElementById('rhythm-patterns').textContent = scoreAnalysis.rhythmPatterns;
+                
+                // Show results
+                document.getElementById('analysis-results').classList.remove('hidden');
+                
+                // Reset button
+                button.textContent = originalText;
+                button.disabled = false;
+                
+                console.log('✅ Analysis complete:', scoreAnalysis);
+            }, 3000);
+        }
+        
+        function generateCustomExercises() {
+            console.log('🎼 Generating custom exercises based on uploaded score...');
+            
+            // Show custom exercise in practice screen
+            document.getElementById('custom-exercise-card').style.display = 'block';
+            
+            // Switch to practice screen
+            showPractice();
+            
+            // Show success message
+            alert('Custom exercises generated! Check the "Your Uploaded Score" card in the practice section.');
+        }
+        
+        function generateExercise() {
+            console.log('🎼 Generating exercise...');
+            
+            if (currentExercise === 'custom-score' && scoreAnalysis) {
+                // Generate exercise based on uploaded score analysis
+                generateCustomExercise();
+            } else {
+                // Generate standard exercise
+                generateStandardExercise();
+            }
+            
+            startTimer();
+        }
+        
+        function generateCustomExercise() {
+            const staff = document.getElementById('music-staff');
+            const key = scoreAnalysis.keySignature;
+            const timeSig = scoreAnalysis.timeSignature;
+            
+            staff.innerHTML = `
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div style="position: absolute; left: 10%; top: 20%; font-size: 16px; color: #333;">${key}</div>
+                <div style="position: absolute; left: 10%; top: 40%; font-size: 16px; color: #333;">${timeSig}</div>
+                <div class="note" style="left: 30%;"></div>
+                <div class="note" style="left: 50%; top: 35%;"></div>
+                <div class="note" style="left: 70%; top: 55%;"></div>
+            `;
+            
+            document.getElementById('feedback').textContent = `Identify the notes in ${key} ${timeSig} time!`;
+        }
+        
+        function generateStandardExercise() {
+            const staff = document.getElementById('music-staff');
+            staff.innerHTML = `
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="note" style="left: 30%;"></div>
+                <div class="note" style="left: 50%; top: 35%;"></div>
+                <div class="note" style="left: 70%; top: 55%;"></div>
+            `;
+            
+            document.getElementById('feedback').textContent = 'Identify the notes on the staff!';
+        }
+        
+        function playExercise() {
+            console.log('🔊 Playing exercise audio...');
+            // In a real app, this would play actual audio
+            document.getElementById('feedback').textContent = '🔊 Playing audio... (Simulated)';
+        }
+        
+        function checkAnswer() {
+            console.log('✅ Checking answer...');
+            const isCorrect = Math.random() > 0.3; // Simulate 70% accuracy
+            
+            if (isCorrect) {
+                document.getElementById('feedback').textContent = '✅ Correct! Great job!';
+                gameStats.xp += 10;
+                gameStats.exercisesCompleted++;
+                updateStats();
+            } else {
+                document.getElementById('feedback').textContent = '❌ Not quite right. Try again!';
+            }
+        }
+        
+        function skipExercise() {
+            console.log('⏭️ Skipping exercise...');
+            document.getElementById('feedback').textContent = 'Exercise skipped. Try another one!';
+            stopTimer();
+        }
+        
+        function startTimer() {
+            timeElapsed = 0;
+            exerciseTimer = setInterval(() => {
+                timeElapsed++;
+                const minutes = Math.floor(timeElapsed / 60);
+                const seconds = timeElapsed % 60;
+                document.getElementById('timer').textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Update progress bar
+                const progress = Math.min((timeElapsed / 60) * 100, 100);
+                document.getElementById('progress-fill').style.width = progress + '%';
+            }, 1000);
+        }
+        
+        function stopTimer() {
+            if (exerciseTimer) {
+                clearInterval(exerciseTimer);
+                exerciseTimer = null;
+            }
+        }
+        
+        function resetExercise() {
+            stopTimer();
+            timeElapsed = 0;
+            document.getElementById('timer').textContent = 'Time: 0:00';
+            document.getElementById('progress-fill').style.width = '0%';
+            document.getElementById('feedback').textContent = '';
+            
+            const staff = document.getElementById('music-staff');
+            staff.innerHTML = `
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div class="staff-line"></div>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px;">
+                    Click "Generate Exercise" to start
+                </div>
+            `;
+        }
+        
+        function updateStats() {
+            document.getElementById('xp-display').textContent = gameStats.xp;
+            document.getElementById('streak-display').textContent = gameStats.streak;
+            document.getElementById('level-display').textContent = `Level ${gameStats.level}`;
+            document.getElementById('exercises-display').textContent = gameStats.exercisesCompleted;
+        }
+        
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ SightReadPro Web App Loaded!');
+            
+            // Add hover effects to buttons
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Add hover effects to practice cards
+            const practiceCards = document.querySelectorAll('.practice-card');
+            practiceCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.background = 'rgba(255, 255, 255, 0.2)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.background = 'rgba(255, 255, 255, 0.1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+

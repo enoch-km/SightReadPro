@@ -1,0 +1,7 @@
+{
+  "name": "sightreadpro",
+  "displayName": "SightReadPro",
+  "ios": {
+    "bundleIdentifier": "com.anonymous.sightreadpro"
+  }
+}
